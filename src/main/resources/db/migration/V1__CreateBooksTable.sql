@@ -1,4 +1,4 @@
 CREATE TABLE book (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NULL
+    title VARCHAR(256) NULL
 );

@@ -1,2 +1,2 @@
 ALTER TABLE book
-ADD author_name varchar(128);
+ADD author_name varchar(128) NULL;

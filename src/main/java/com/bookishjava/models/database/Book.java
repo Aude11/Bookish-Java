@@ -2,10 +2,15 @@ package com.bookishjava.models.database;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+import java.time.LocalDate;
 @Entity
 public class Book {
     private @Id @GeneratedValue Long id;
     private String title;
+    private String authorName;
+
+    private LocalDate publishedDate;
 
     public Long getId() {
         return id;
@@ -19,6 +24,11 @@ public class Book {
     public void setTitle(String title) {
         this.title = title;
     }
+    public String getAuthor() { return authorName; }
+    public void setAuthor(String authorName) { this.authorName = authorName; }
+
+    public LocalDate getPublishedDate() { return publishedDate; }
+    public void setPublishedDate(LocalDate publishedDate) { this.publishedDate = publishedDate; }
 
     @Override
     public int hashCode() {
