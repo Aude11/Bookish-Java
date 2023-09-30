@@ -2,12 +2,20 @@ package com.bookishjava.controllers;
 
 import com.bookishjava.models.database.Book;
 import com.bookishjava.repositories.BookRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,17 +34,20 @@ public class BookController {
         return repository.findAll();
     }
 
-
-    @PostMapping("/new-book/")
+    @Transactional
+    @Modifying
+    @PostMapping(path = "/newbook",
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Book> createNewBook(@RequestBody Book book)
     {
-        Optional<Book> newBook = Optional.of(repository.save(book));
+        /*Optional<Book> newBook = Optional.of(repository.save(book));
         if (!newBook .isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        Book newBook2 =repository.save(book);
-        ResponseEntity<Book> body = ResponseEntity.status(HttpStatus.CREATED).body(newBook2);
-        return body;
+        } */
+        Book c = repository.save(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(c);
+       // return body;
 
     }
 

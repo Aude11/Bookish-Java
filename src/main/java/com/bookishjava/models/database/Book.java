@@ -2,11 +2,12 @@ package com.bookishjava.models.database;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.io.Serializable;
 import java.time.LocalDate;
 @Entity
+@Table(name = "book", schema = "public")
 public class Book {
-    private @Id @GeneratedValue Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String title;
     private String authorName;
     private LocalDate publishedDate;
