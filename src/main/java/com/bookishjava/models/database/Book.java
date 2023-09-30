@@ -9,8 +9,9 @@ public class Book {
     private @Id @GeneratedValue Long id;
     private String title;
     private String authorName;
-
     private LocalDate publishedDate;
+
+    public Book() {};
 
     public Long getId() {
         return id;
@@ -29,6 +30,8 @@ public class Book {
 
     public LocalDate getPublishedDate() { return publishedDate; }
     public void setPublishedDate(LocalDate publishedDate) { this.publishedDate = publishedDate; }
+
+
 
     @Override
     public int hashCode() {

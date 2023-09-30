@@ -3,12 +3,10 @@ package com.bookishjava.controllers;
 import com.bookishjava.models.database.Book;
 import com.bookishjava.repositories.BookRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.http.RequestEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -28,9 +26,56 @@ public class BookController {
         return repository.findAll();
     }
 
-    @PostMapping("/new-book")
-    void createNewBook() {
-        // implement
+
+    @PostMapping("/new-book/")
+    public ResponseEntity<Book> createNewBook(@RequestBody Book book)
+    {
+        Optional<Book> newBook = Optional.of(repository.save(book));
+        if (!newBook .isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Book newBook2 =repository.save(book);
+        ResponseEntity<Book> body = ResponseEntity.status(HttpStatus.CREATED).body(newBook2);
+        return body;
+
+    }
+
+   /* @PutMapping("/update/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id, @RequestBody Book bookToUpdate)
+    {
+        Optional<Book> bookToUpdateRequestedByID = Optional.of(repository.getReferenceById(id));
+        if (!bookToUpdateRequestedByID.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        bookToUpdate.setAuthor("NewAuthor");
+        bookToUpdate.setTitle("NewTitle");
+        Book udaptedBook = repository.save(bookToUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(udaptedBook);
+    } */
+
+    @PutMapping("/edit-book/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id)
+    {
+        Optional<Book> bookToUpdateRequestedByID = Optional.of(repository.getReferenceById(id));
+        if (!bookToUpdateRequestedByID.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Book bookToUpdate = repository.getReferenceById(id);
+        bookToUpdate.setAuthor("NewAuthor");
+        bookToUpdate.setTitle("NewTitle");
+        Book udaptedBook = repository.save(bookToUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(udaptedBook);
+    }
+
+    @DeleteMapping("/books/delete/{id}")
+    public ResponseEntity<Void> deleteBookById(@PathVariable("id") Long id)
+    {
+        Optional<Book> bookToDeleteRequestedByID = repository.findById(id);
+        if (!bookToDeleteRequestedByID.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        repository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("books/{id}")
@@ -54,7 +99,6 @@ public class BookController {
 
     @GetMapping("books/author/{author}")
     List<Book> getBookByAuthor(@PathVariable String author) {
-        // impelment id
         return repository.findByAuthorName(author);
     }
 
