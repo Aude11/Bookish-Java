@@ -3,6 +3,7 @@ package com.bookishjava.controllers;
 import com.bookishjava.models.database.Book;
 import com.bookishjava.repositories.BookRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,51 +33,50 @@ public class BookController {
 
     @GetMapping("/books")
     List<Book> getBooks() {
-        return repository.findAll();
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "authorName"));
     }
 
-    @Transactional
-    @Modifying
     @PostMapping(path = "/newbook",
     consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Book> createNewBook(@RequestBody Book book)
     {
-        /*Optional<Book> newBook = Optional.of(repository.save(book));
-        if (!newBook .isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } */
-        Book c = repository.save(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(c);
-       // return body;
-
+        Long idTocheck;
+        idTocheck = book.getId();
+        if (idTocheck != null) {
+            Optional<Book> bookByID = Optional.of(repository.getReferenceById(idTocheck));
+            if (bookByID.isPresent()) {
+                return ResponseEntity.status(HttpStatus.IM_USED).build();
+            }
+        }
+        Book newBook = repository.save(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBook);
     }
 
-   /* @PutMapping("/update/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id, @RequestBody Book bookToUpdate)
+    @PutMapping(path = "edit-book/{id}",
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id, @RequestBody Book book)
     {
-        Optional<Book> bookToUpdateRequestedByID = Optional.of(repository.getReferenceById(id));
-        if (!bookToUpdateRequestedByID.isPresent()) {
+        //Optional<Book> bookRequestdById = Optional.of(repository.getReferenceById(id));
+        boolean isExist = repository.existsById(id);
+        /*if (!bookRequestdById.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }*/
+        if (isExist == false) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        bookToUpdate.setAuthor("NewAuthor");
-        bookToUpdate.setTitle("NewTitle");
-        Book udaptedBook = repository.save(bookToUpdate);
-        return ResponseEntity.status(HttpStatus.OK).body(udaptedBook);
-    } */
+        //Book bookToUpdate = repository.getReferenceById(id);
+        Book bookToUpdate = repository.findById(id).get();
+        String newTitle = book.getTitle();
+        String newAuthor = book.getAuthor();
+        LocalDate newDate = book.getPublishedDate();
+        bookToUpdate.setTitle(newTitle);
+        bookToUpdate.setAuthor(newAuthor);
+        bookToUpdate.setPublishedDate(newDate);
+        repository.save(bookToUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(bookToUpdate);
 
-    @PutMapping("/edit-book/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id)
-    {
-        Optional<Book> bookToUpdateRequestedByID = Optional.of(repository.getReferenceById(id));
-        if (!bookToUpdateRequestedByID.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        Book bookToUpdate = repository.getReferenceById(id);
-        bookToUpdate.setAuthor("NewAuthor");
-        bookToUpdate.setTitle("NewTitle");
-        Book udaptedBook = repository.save(bookToUpdate);
-        return ResponseEntity.status(HttpStatus.OK).body(udaptedBook);
     }
 
     @DeleteMapping("/books/delete/{id}")
