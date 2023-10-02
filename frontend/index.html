@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookish</title>
+  </head>
+  <body>
+    <div class="card" id="lab">
+      <h1> Welcome to the libaray </h1>
+      <h2> Books</h2>
+      <button onclick="displayBooks()"> Show All Books</button>
+      <h3 id="books"></h3>
+      </body>
+    </div>
+
+      <script> function displayBooks(){ fetch("http://localhost:8080/books",
+      {method: "GET", 
+      mode: "cors",
+      headers: 
+      {"Access-Control-Allow-Origin":"http://localhost:8080/books"}
+    })
+        .then(response => response.json())
+        .then(data => myfunc(data));
+      }
+      
+      function myfunc(mydata) {
+        var str = '<ul>'
+        mydata.forEach(function(ele) {
+        str += '<li>'+ ele.title + " from " + ele.author + '</li>';
+          }); 
+          str += '</ul>';
+          document.getElementById("books").innerHTML = str;
+        }
+
+      </script>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

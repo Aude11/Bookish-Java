@@ -31,6 +31,8 @@ public class BookController {
         this.repository = repository;
     }
 
+
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/books")
     List<Book> getBooks() {
         return repository.findAll(Sort.by(Sort.Direction.ASC, "authorName"));
@@ -98,6 +100,15 @@ public class BookController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(Optional.of(bookRequestedByID.get()));
     }
+
+    @GetMapping("books/count")
+    public int getCountAuthor() {
+        String authorToSearch = "Margaret Atwood";
+        return (int) repository.findByAuthorName(authorToSearch).stream().count();
+    }
+
+
+
 
     @GetMapping("books/title/{title}")
     public ResponseEntity<Optional<Book>>getBookByTitle(@PathVariable("title") String title) {
